@@ -1,9 +1,9 @@
-import type { Coordinate } from '@/shared/types'
+import type { Coordinate, RoutePoint } from '@/shared/types'
 
 export type Emit = {
   mapClick: [value: Coordinate]
 }
 
 export type Props = {
-  points: Coordinate[]
+  points: RoutePoint[]
 }

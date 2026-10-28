@@ -37,7 +37,7 @@ const onMapClick = (data: MglEvent<'click'>) => {
       <MglMarker
         v-for="(point, index) in points"
         :key="index"
-        :coordinates="point"
+        :coordinates="point.coordinate"
       />
     </MglMap>
   </div>

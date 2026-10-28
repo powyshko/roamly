@@ -1,12 +1,15 @@
 <script lang="ts" setup>
 import { MapView } from "@/modules/map-engine/public"
-import type { Coordinate } from "@/shared/types";
+import type { Coordinate, RoutePoint } from "@/shared/types";
 import { ref } from "vue";
 
-const points = ref<Coordinate[]>([]);
+const points = ref<RoutePoint[]>([]);
 
-const addPoint = (point: Coordinate) => {
-  points.value.push(point)
+const addPoint = (coordinate: Coordinate) => {
+  points.value.push({
+    uuid: crypto.randomUUID(),
+    coordinate,
+  })
 }
 </script>
 

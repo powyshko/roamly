@@ -20,3 +20,13 @@ export const mapStyle: StyleSpecification = {
     },
   ],
 };
+
+export const layout = {
+  'line-join': 'round',
+  'line-cap' : 'round'
+} as const;
+
+export const paint = {
+  'line-color': '#2563eb',
+  'line-width': 4
+};

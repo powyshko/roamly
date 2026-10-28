@@ -1,12 +1,14 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import {
   MglMap,
   MglNavigationControl,
   MglMarker,
   type MglEvent,
+  MglGeoJsonSource,
+  MglLineLayer,
 } from "@indoorequal/vue-maplibre-gl";
-import { mapStyle } from "./consts";
+import { mapStyle, layout, paint } from "./consts";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Emit, Props } from "./types"
 import type { Coordinate } from "@/shared/types";
@@ -16,6 +18,17 @@ const emit = defineEmits<Emit>();
 
 const center = ref<[number, number]>([109.1967, 12.2388]);
 const zoom = ref(12);
+
+const coordinates = computed(() => points.map((point) => point.coordinate))
+
+const routeGeoJson = computed(() => ({
+  type: "Feature" as const,
+  properties: {},
+  geometry: {
+    type: "LineString" as const,
+    coordinates: coordinates.value,
+  },
+}));
 
 const onMapClick = (data: MglEvent<'click'>) => {
   const coordinate: Coordinate = [data.event.lngLat.lng, data.event.lngLat.lat]
@@ -39,6 +52,18 @@ const onMapClick = (data: MglEvent<'click'>) => {
         :key="index"
         :coordinates="point.coordinate"
       />
+
+      <MglGeoJsonSource
+        v-if="points.length >= 2"
+        source-id="draft-route"
+        :data="routeGeoJson"
+      >
+        <MglLineLayer
+          layer-id="draft-route-line"
+          :layout="layout"
+          :paint="paint"
+        />
+      </MglGeoJsonSource>
     </MglMap>
   </div>
 </template>

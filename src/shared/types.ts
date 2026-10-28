@@ -3,7 +3,12 @@ export type Coordinate = [
   latitude: number
 ];
 
-export interface RoutePoint {
+export type RoutePoint = {
   uuid: string;
   coordinate: Coordinate;
+}
+
+export type MoveCoordinate = {
+  lng: number;
+  lat: number;
 }

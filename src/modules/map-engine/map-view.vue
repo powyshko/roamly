@@ -11,7 +11,7 @@ import {
 import { mapStyle, layout, paint } from "./consts";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Emit, Props } from "./types"
-import type { Coordinate } from "@/shared/types";
+import type { Coordinate, MoveCoordinate } from "@/shared/types";
 
 const { points } = defineProps<Props>();
 const emit = defineEmits<Emit>();
@@ -35,6 +35,10 @@ const onMapClick = (data: MglEvent<'click'>) => {
 
   emit('mapClick', coordinate)
 }
+
+const onMovePoint = (uuidPoint: string, data: MoveCoordinate) => {
+  emit('pointMove', uuidPoint, [data.lng, data.lat])
+}
 </script>
 
 <template>
@@ -48,9 +52,11 @@ const onMapClick = (data: MglEvent<'click'>) => {
       <MglNavigationControl position="top-right" />
 
       <MglMarker
-        v-for="(point, index) in points"
-        :key="index"
+        v-for="point in points"
+        :key="point.uuid"
+        :draggable="true"
         :coordinates="point.coordinate"
+        @update:coordinates="onMovePoint(point.uuid, $event)"
       />
 
       <MglGeoJsonSource

@@ -11,6 +11,14 @@ const addPoint = (coordinate: Coordinate) => {
     coordinate,
   })
 }
+
+const movePoint = (uuid: string, coordinate: Coordinate) => {
+  const point = points.value.find((point) => point.uuid === uuid);
+
+  if (!point) return;
+
+  point.coordinate = coordinate;
+};
 </script>
 
 <template>
@@ -18,6 +26,7 @@ const addPoint = (coordinate: Coordinate) => {
     <MapView
       :points="points"
       @map-click="addPoint"
+      @point-move="movePoint"
     />
   </div>
 </template>

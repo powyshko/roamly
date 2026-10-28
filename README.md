@@ -44,3 +44,11 @@ TypeScript и Vue. Prettier отвечает за оформление: отст
 с Node.js 20.16; обновляйте их вместе с учётом требований к Node.js.
 
 Перед коммитом или в CI запустите `npm run check` и `npm run build`.
+
+В VS Code/Cursor установите рекомендованные расширения из `.vscode/extensions.json`:
+ESLint, Prettier и Vue - Official. Настройки `.vscode/settings.json` включают
+исправления ESLint при явном сохранении (Cmd+S / Ctrl+S) и форматирование Prettier.
+Правило `@typescript-eslint/consistent-type-imports` автоматически преобразует
+импорты, используемые только как типы, в `import type`. Ошибки без автоматического
+исправления нужно исправлять вручную. Проверка типов остаётся отдельной командой
+`npm run type:check`.

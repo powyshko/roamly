@@ -11,6 +11,15 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
+    files: ['**/*.{ts,vue}'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
+      ],
+    },
+  },
+  {
     files: ['src/**/*.{js,ts,vue}'],
     languageOptions: { globals: globals.browser },
   },

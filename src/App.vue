@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { MapView } from "@/modules/map-engine/public"
+import { RouteEditor } from "@/modules/route-editor/public"
 </script>
 
 <template>
   <div class="app">
-    <MapView />
+    <RouteEditor />
   </div>
 </template>
 

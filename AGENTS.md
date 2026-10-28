@@ -25,6 +25,8 @@ Roamly — стартовое клиентское приложение на Vue
 - `tsconfig.node.json` — настройки TypeScript для конфигурации Vite.
 - `eslint.config.js` — flat config ESLint.
 - `.prettierrc.json` и `.prettierignore` — настройки форматирования.
+- `.vscode/settings.json` — исправления ESLint при явном сохранении и форматирование
+  Prettier в VS Code/Cursor; рекомендованные расширения — в `.vscode/extensions.json`.
 
 ## Зависимости и запуск
 
@@ -58,6 +60,8 @@ Roamly — стартовое клиентское приложение на Vue
   Не отключайте проверки и правила ESLint ради обхода ошибки; исправляйте её причину.
 - ESLint проверяет код по рекомендуемым правилам JavaScript, TypeScript и Vue.
   Проверку типов выполняет отдельная команда `type:check`.
+  Правило `@typescript-eslint/consistent-type-imports` автоматически приводит
+  импорты типов к отдельным `import type` при исправлениях ESLint.
 - Форматирование поручайте Prettier: два пробела, одинарные кавычки в JS/TS,
   без точек с запятой, завершающие запятые, ширина строки 100 символов.
   Сохраняйте `eslint-config-prettier` последним в конфигурации ESLint,

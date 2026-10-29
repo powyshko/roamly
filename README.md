@@ -40,6 +40,8 @@ TypeScript и Vue. Prettier отвечает за оформление: отст
 кавычки в JavaScript/TypeScript, без точек с запятой, ширина строки 100 символов.
 `eslint-config-prettier` отключает конфликтующие правила ESLint.
 Проверка типов выполняется отдельно через `vue-tsc`.
+В `src/` вызовы `console.log` запрещены правилом ESLint `no-restricted-properties`
+и приводят к ошибке проверки. Остальные методы `console` этим правилом не запрещены.
 Версии `typescript-eslint` и `@typescript-eslint/parser` закреплены для совместимости
 с Node.js 20.16; обновляйте их вместе с учётом требований к Node.js.
 
@@ -48,6 +50,9 @@ TypeScript и Vue. Prettier отвечает за оформление: отст
 В VS Code/Cursor установите рекомендованные расширения из `.vscode/extensions.json`:
 ESLint, Prettier и Vue - Official. Настройки `.vscode/settings.json` включают
 исправления ESLint при явном сохранении (Cmd+S / Ctrl+S) и форматирование Prettier.
+Плагин `eslint-plugin-unused-imports` автоматически удаляет неиспользуемые импорты
+при таком сохранении и при `npm run lint:fix`. Импорты, используемые в шаблоне Vue,
+сохраняются. Неиспользуемые переменные по-прежнему считаются ошибкой.
 Правило `@typescript-eslint/consistent-type-imports` автоматически преобразует
 импорты, используемые только как типы, в `import type`. Ошибки без автоматического
 исправления нужно исправлять вручную. Проверка типов остаётся отдельной командой

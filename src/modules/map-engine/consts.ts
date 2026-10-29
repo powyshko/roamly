@@ -30,3 +30,5 @@ export const paint = {
   'line-color': '#2563eb',
   'line-width': 4
 };
+
+export const LAYER_ID = "draft-route-line"

@@ -8,7 +8,7 @@ import {
   MglGeoJsonSource,
   MglLineLayer,
 } from "@indoorequal/vue-maplibre-gl";
-import { mapStyle, layout, paint } from "./consts";
+import { mapStyle, layout, paint, LAYER_ID } from "./consts";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Emit, Props } from "./types"
 import type { Coordinate, MoveCoordinate } from "@/shared/types";
@@ -31,7 +31,21 @@ const routeGeoJson = computed(() => ({
 }));
 
 const onMapClick = (data: MglEvent<'click'>) => {
-  const coordinate: Coordinate = [data.event.lngLat.lng, data.event.lngLat.lat]
+  const event = data.event
+  const map = event.target
+  const layerId = LAYER_ID
+  const coordinate: Coordinate = [event.lngLat.lng, event.lngLat.lat]
+
+  const clickedLine =
+    !!map.getLayer(layerId) &&
+    map.queryRenderedFeatures(event.point, {
+      layers: [layerId],
+    }).length > 0
+
+  if (clickedLine) {
+    emit('lineClick', coordinate)
+    return
+  }
 
   emit('mapClick', coordinate)
 }
@@ -39,6 +53,7 @@ const onMapClick = (data: MglEvent<'click'>) => {
 const onMovePoint = (uuidPoint: string, data: MoveCoordinate) => {
   emit('pointMove', uuidPoint, [data.lng, data.lat])
 }
+
 </script>
 
 <template>
@@ -65,7 +80,7 @@ const onMovePoint = (uuidPoint: string, data: MoveCoordinate) => {
         :data="routeGeoJson"
       >
         <MglLineLayer
-          layer-id="draft-route-line"
+          :layer-id="LAYER_ID"
           :layout="layout"
           :paint="paint"
         />

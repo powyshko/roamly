@@ -6,10 +6,10 @@
 
 ```ts
 import HelloWorld from '@/components/HelloWorld.vue'
-import '@/style.css'
+import '@/styles/style.css'
 ```
 
-Цветовые CSS-переменные находятся в `src/variables.css` и подключены в `src/main.ts`.
+Цветовые CSS-переменные находятся в `src/styles/variables.css` и подключены в `src/main.ts`.
 В стилях компонентов используйте их по назначению, например
 `background: var(--color-sage-600)`. Названия следуют схеме
 `--color-{семейство}-{оттенок}`: от светлого `50` до тёмного `900`. Суффикс

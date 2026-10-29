@@ -42,6 +42,14 @@ const insertPoint = (coordinate: Coordinate) => {
 const setSelectedPointId = (uuid: string) => {
   selectedPointId.value = uuid;
 }
+
+const deletePoint = (uuid: string) => {
+  points.value = points.value.filter(
+    (point) => point.uuid !== uuid,
+  );
+
+  selectedPointId.value = null;
+};
 </script>
 
 <template>
@@ -53,6 +61,7 @@ const setSelectedPointId = (uuid: string) => {
       @point-move="movePoint"
       @line-click="insertPoint"
       @marker-click="setSelectedPointId"
+      @delete-point="deletePoint"
     />
   </div>
 </template>

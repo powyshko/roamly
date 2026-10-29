@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from '@/App.vue'
+import '@/variables.css'
 import '@/style.css'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import VueMaplibreGl from '@indoorequal/vue-maplibre-gl'

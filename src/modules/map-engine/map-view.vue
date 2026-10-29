@@ -3,7 +3,6 @@ import { computed, ref } from "vue";
 import {
   MglMap,
   MglNavigationControl,
-  MglMarker,
   type MglEvent,
   MglGeoJsonSource,
   MglLineLayer,
@@ -11,8 +10,10 @@ import {
 import { mapStyle, layout, paint, LAYER_ID } from "./consts";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Emit, Props } from "./types"
-import type { Coordinate, MoveCoordinate } from "@/shared/types";
+import type { Coordinate } from "@/shared/types";
 import RoutePointMarker from "@/components/RoutePointMarker.vue";
+import { NButton } from "naive-ui";
+import { TrashOutline } from "@vicons/ionicons5";
 
 const { points, selectedPoint = undefined } = defineProps<Props>();
 const emit = defineEmits<Emit>();
@@ -61,6 +62,12 @@ const onClickTargetMarker = (uuid: string) => {
   emit('markerClick', uuid)
 }
 
+const onDeletePoint = () => {
+  if (!selectedPoint) return;
+
+  emit("deletePoint", selectedPoint.uuid);
+};
+
 </script>
 
 <template>
@@ -87,7 +94,19 @@ const onClickTargetMarker = (uuid: string) => {
         :coordinates="selectedPoint.coordinate"
         :close-button="false"
       >
-        <button>Delete</button>
+        <NButton
+          type="error"
+          quaternary
+          circle
+          size="tiny"
+          aria-label="Удалить точку маршрута"
+          title="Удалить точку"
+          @click.stop="onDeletePoint"
+        >
+          <template #icon>
+            <TrashOutline :size="12" />
+          </template>
+        </NButton>
       </MglPopup>
 
       <MglGeoJsonSource
@@ -112,20 +131,14 @@ const onClickTargetMarker = (uuid: string) => {
   min-height: 400px;
 }
 
-.route-marker {
-  width: 14px;
-  height: 14px;
-  padding: 0;
-  border: 2px solid white;
-  border-radius: 50%;
-  background: #2563eb;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 30%);
-  cursor: pointer;
+:deep(.maplibregl-popup-content) {
+  padding: 6px;
+  border-radius: 8px;
+  background: var(--color-sand-50);
+  box-shadow: 0 2px 8px var(--color-sage-900-alpha-20);
 }
 
-.route-marker--selected {
-  width: 20px;
-  height: 20px;
-  outline: 3px solid rgb(37 99 235 / 30%);
+:deep(.maplibregl-popup-tip) {
+  border-top-color: var(--color-sand-50);
 }
 </style>

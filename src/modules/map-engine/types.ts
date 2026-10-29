@@ -4,7 +4,8 @@ export type Emit = {
   mapClick: [value: Coordinate]
   pointMove: [uuid: string, coordinate: Coordinate]
   lineClick: [value: Coordinate]
-  markerClick: [value: string]
+  markerClick: [uuid: string]
+  deletePoint: [uuid: string];
 }
 
 export type Props = {

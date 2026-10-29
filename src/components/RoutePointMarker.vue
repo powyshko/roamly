@@ -46,10 +46,10 @@ const onMove = (data: MoveCoordinate) => {
   width: 11px;
   height: 11px;
   padding: 0;
-  border: 1.5px solid #edf2ed;
+  border: 1.5px solid var(--color-sage-50);
   border-radius: 50%;
-  background: #627f78;
-  box-shadow: 0 1px 3px rgb(36 48 43 / 25%);
+  background: var(--color-sage-600);
+  box-shadow: 0 1px 3px var(--color-sage-900-alpha-25);
   cursor: grab;
   transition:
     background 160ms ease,
@@ -60,13 +60,13 @@ const onMove = (data: MoveCoordinate) => {
 
 .route-marker:hover {
   transform: scale(1.2);
-  box-shadow: 0 1px 4px rgb(36 48 43 / 35%);
+  box-shadow: 0 1px 4px var(--color-sage-900-alpha-35);
 }
 
 .route-marker--selected {
-  background: #c17b59;
-  border-color: #fff0e5;
-  box-shadow: 0 0 0 3px rgb(193 123 89 / 25%);
+  background: var(--color-terracotta-500);
+  border-color: var(--color-terracotta-50);
+  box-shadow: 0 0 0 3px var(--color-terracotta-500-alpha-25);
   transform: scale(1.1);
 }
 

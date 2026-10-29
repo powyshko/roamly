@@ -1,0 +1,15 @@
+:root {
+  /* Базовая палитра: семейство цвета и уровень темноты оттенка (50–900). */
+  --color-sage-50: #edf2ed;
+  --color-sage-600: #627f78;
+  --color-sage-900: #24302b;
+  --color-terracotta-50: #fff0e5;
+  --color-terracotta-500: #c17b59;
+  --color-sand-50: #f8f6f0;
+
+  /* Прозрачные варианты: alpha — непрозрачность в процентах. */
+  --color-sage-900-alpha-20: rgb(36 48 43 / 20%);
+  --color-sage-900-alpha-25: rgb(36 48 43 / 25%);
+  --color-sage-900-alpha-35: rgb(36 48 43 / 35%);
+  --color-terracotta-500-alpha-25: rgb(193 123 89 / 25%);
+}

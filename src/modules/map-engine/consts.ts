@@ -27,8 +27,9 @@ export const layout = {
 } as const;
 
 export const paint = {
-  'line-color': '#2563eb',
-  'line-width': 4
+  "line-color": "#8B7767",
+  "line-width": 3,
+  "line-opacity": 0.9,
 };
 
 export const LAYER_ID = "draft-route-line"

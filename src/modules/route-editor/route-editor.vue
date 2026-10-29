@@ -1,10 +1,17 @@
 <script lang="ts" setup>
 import { MapView } from "@/modules/map-engine/public"
 import type { Coordinate, RoutePoint } from "@/shared/types";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { findNearestSegment } from "./utils";
 
 const points = ref<RoutePoint[]>([]);
+const selectedPointId = ref<string | null>(null);
+
+const selectedPoint = computed(() =>
+  points.value.find(
+    (point) => point.uuid === selectedPointId.value,
+  ),
+);
 
 const addPoint = (coordinate: Coordinate) => {
   points.value.push({
@@ -31,15 +38,21 @@ const insertPoint = (coordinate: Coordinate) => {
     coordinate,
   });
 };
+
+const setSelectedPointId = (uuid: string) => {
+  selectedPointId.value = uuid;
+}
 </script>
 
 <template>
   <div class="route-editor">
     <MapView
       :points="points"
+      :selected-point="selectedPoint"
       @map-click="addPoint"
       @point-move="movePoint"
       @line-click="insertPoint"
+      @marker-click="setSelectedPointId"
     />
   </div>
 </template>

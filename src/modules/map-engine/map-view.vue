@@ -12,8 +12,9 @@ import { mapStyle, layout, paint, LAYER_ID } from "./consts";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Emit, Props } from "./types"
 import type { Coordinate, MoveCoordinate } from "@/shared/types";
+import RoutePointMarker from "@/components/RoutePointMarker.vue";
 
-const { points } = defineProps<Props>();
+const { points, selectedPoint = undefined } = defineProps<Props>();
 const emit = defineEmits<Emit>();
 
 const center = ref<[number, number]>([109.1967, 12.2388]);
@@ -43,15 +44,21 @@ const onMapClick = (data: MglEvent<'click'>) => {
     }).length > 0
 
   if (clickedLine) {
+    emit('markerClick', "")
     emit('lineClick', coordinate)
     return
   }
 
+  emit('markerClick', "")
   emit('mapClick', coordinate)
 }
 
-const onMovePoint = (uuidPoint: string, data: MoveCoordinate) => {
-  emit('pointMove', uuidPoint, [data.lng, data.lat])
+const onMovePoint = (uuidPoint: string, coordinate: Coordinate) => {
+  emit('pointMove', uuidPoint, coordinate)
+}
+
+const onClickTargetMarker = (uuid: string) => {
+  emit('markerClick', uuid)
 }
 
 </script>
@@ -66,13 +73,22 @@ const onMovePoint = (uuidPoint: string, data: MoveCoordinate) => {
     >
       <MglNavigationControl position="top-right" />
 
-      <MglMarker
+      <RoutePointMarker
         v-for="point in points"
         :key="point.uuid"
-        :draggable="true"
-        :coordinates="point.coordinate"
-        @update:coordinates="onMovePoint(point.uuid, $event)"
+        :point="point"
+        :selected="point.uuid === selectedPoint?.uuid"
+        @point-click="onClickTargetMarker"
+        @point-move="onMovePoint"
       />
+
+      <MglPopup
+        v-if="selectedPoint"
+        :coordinates="selectedPoint.coordinate"
+        :close-button="false"
+      >
+        <button>Delete</button>
+      </MglPopup>
 
       <MglGeoJsonSource
         v-if="points.length >= 2"
@@ -94,5 +110,22 @@ const onMovePoint = (uuidPoint: string, data: MoveCoordinate) => {
   width: 100%;
   height: 100vh;
   min-height: 400px;
+}
+
+.route-marker {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: #2563eb;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 30%);
+  cursor: pointer;
+}
+
+.route-marker--selected {
+  width: 20px;
+  height: 20px;
+  outline: 3px solid rgb(37 99 235 / 30%);
 }
 </style>

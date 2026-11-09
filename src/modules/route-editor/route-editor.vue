@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 import { MapView } from "@/modules/map-engine/public"
 import type { Coordinate, RoutePoint } from "@/shared/types";
+import { HistoryActionType } from "@/shared/types";
 import { computed, ref } from "vue";
 import { findNearestSegment } from "./utils";
+import { useRouteHistory } from "./composables/useRouteHistory";
 
 const points = ref<RoutePoint[]>([]);
 const selectedPointId = ref<string | null>(null);
+const { canUndo, pushAction, undo } = useRouteHistory();
 
 const selectedPoint = computed(() =>
   points.value.find(
@@ -14,10 +17,20 @@ const selectedPoint = computed(() =>
 );
 
 const addPoint = (coordinate: Coordinate) => {
-  points.value.push({
+  const point: RoutePoint = {
     uuid: crypto.randomUUID(),
     coordinate,
-  })
+  };
+
+  const index = points.value.length;
+
+  pushAction({
+    type: HistoryActionType.AddPoint,
+    point,
+    index,
+  });
+
+  points.value.push(point);
 }
 
 const movePoint = (uuid: string, coordinate: Coordinate) => {
@@ -33,10 +46,20 @@ const insertPoint = (coordinate: Coordinate) => {
 
   if (index === -1) return;
 
-  points.value.splice(index + 1, 0, {
+  const point: RoutePoint = {
     uuid: crypto.randomUUID(),
     coordinate,
+  };
+
+  const insertIndex = index + 1;
+
+  pushAction({
+    type: HistoryActionType.AddPoint,
+    point,
+    index: insertIndex,
   });
+
+  points.value.splice(insertIndex, 0, point);
 };
 
 const setSelectedPointId = (uuid: string) => {
@@ -44,11 +67,51 @@ const setSelectedPointId = (uuid: string) => {
 }
 
 const deletePoint = (uuid: string) => {
-  points.value = points.value.filter(
-    (point) => point.uuid !== uuid,
+  const index = points.value.findIndex(
+    (point) => point.uuid === uuid,
   );
 
+  if (index === -1) return;
+
+  const point = points.value[index];
+
+  pushAction({
+    type: HistoryActionType.DeletePoint,
+    point,
+    index,
+  });
+
+  points.value.splice(index, 1);
+
   selectedPointId.value = null;
+};
+
+const handleUndo = () => {
+  const action = undo();
+
+  if (!action) return;
+
+  switch (action.type) {
+    case HistoryActionType.AddPoint: {
+      points.value.splice(action.index, 1);
+
+      if (selectedPointId.value === action.point.uuid) {
+        selectedPointId.value = null;
+      }
+
+      break;
+    }
+
+    case HistoryActionType.DeletePoint: {
+      points.value.splice(
+        action.index,
+        0,
+        action.point,
+      );
+
+      break;
+    }
+  }
 };
 </script>
 
@@ -57,11 +120,13 @@ const deletePoint = (uuid: string) => {
     <MapView
       :points="points"
       :selected-point="selectedPoint"
+      :undo-disabled="canUndo"
       @map-click="addPoint"
       @point-move="movePoint"
       @line-click="insertPoint"
       @marker-click="setSelectedPointId"
       @delete-point="deletePoint"
+      @undo="handleUndo"
     />
   </div>
 </template>

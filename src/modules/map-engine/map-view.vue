@@ -1,36 +1,36 @@
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed, ref } from 'vue'
 import {
   MglMap,
   MglNavigationControl,
   type MglEvent,
   MglGeoJsonSource,
   MglLineLayer,
-} from "@indoorequal/vue-maplibre-gl";
-import { mapStyle, layout, paint, LAYER_ID } from "./consts";
-import "maplibre-gl/dist/maplibre-gl.css";
-import type { Emit, Props } from "./types"
-import type { Coordinate } from "@/shared/types";
-import RoutePointMarker from "@/components/RoutePointMarker.vue";
-import { NButton } from "naive-ui";
-import { TrashOutline } from "@vicons/ionicons5";
+} from '@indoorequal/vue-maplibre-gl'
+import { mapStyle, layout, paint, LAYER_ID } from '@/modules/map-engine/consts'
+import 'maplibre-gl/dist/maplibre-gl.css'
+import type { Emit, Props } from '@/modules/map-engine/types'
+import type { Coordinate } from '@/shared/types'
+import RoutePointMarker from '@/components/RoutePointMarker.vue'
+import { NButton } from 'naive-ui'
+import { ArrowUndoOutline, TrashOutline } from '@vicons/ionicons5'
 
-const { points, selectedPoint = undefined } = defineProps<Props>();
-const emit = defineEmits<Emit>();
+const { points, selectedPoint = undefined, undoDisabled = false } = defineProps<Props>()
+const emit = defineEmits<Emit>()
 
-const center = ref<[number, number]>([109.1967, 12.2388]);
-const zoom = ref(12);
+const center = ref<[number, number]>([109.1967, 12.2388])
+const zoom = ref(12)
 
 const coordinates = computed(() => points.map((point) => point.coordinate))
 
 const routeGeoJson = computed(() => ({
-  type: "Feature" as const,
+  type: 'Feature' as const,
   properties: {},
   geometry: {
-    type: "LineString" as const,
+    type: 'LineString' as const,
     coordinates: coordinates.value,
   },
-}));
+}))
 
 const onMapClick = (data: MglEvent<'click'>) => {
   const event = data.event
@@ -45,12 +45,12 @@ const onMapClick = (data: MglEvent<'click'>) => {
     }).length > 0
 
   if (clickedLine) {
-    emit('markerClick', "")
+    emit('markerClick', '')
     emit('lineClick', coordinate)
     return
   }
 
-  emit('markerClick', "")
+  emit('markerClick', '')
   emit('mapClick', coordinate)
 }
 
@@ -63,15 +63,27 @@ const onClickTargetMarker = (uuid: string) => {
 }
 
 const onDeletePoint = () => {
-  if (!selectedPoint) return;
+  if (!selectedPoint) return
 
-  emit("deletePoint", selectedPoint.uuid);
-};
-
+  emit('deletePoint', selectedPoint.uuid)
+}
 </script>
 
 <template>
   <div class="map-view">
+    <NButton
+      class="undo-button"
+      type="info"
+      circle
+      :disabled="!undoDisabled"
+      aria-label="Отменить последнее изменение маршрута"
+      title="Отменить последнее изменение"
+      @click.stop="emit('undo')"
+    >
+      <template #icon>
+        <ArrowUndoOutline />
+      </template>
+    </NButton>
     <MglMap
       :map-style="mapStyle"
       :center="center"
@@ -126,9 +138,17 @@ const onDeletePoint = () => {
 
 <style scoped>
 .map-view {
+  position: relative;
   width: 100%;
   height: 100vh;
   min-height: 400px;
+}
+
+.undo-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
 }
 
 :deep(.maplibregl-popup-content) {

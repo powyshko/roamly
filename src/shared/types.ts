@@ -16,4 +16,5 @@ export type MoveCoordinate = {
 export const HistoryActionType = {
   AddPoint: 'ADD_POINT',
   DeletePoint: 'DELETE_POINT',
+  MovePoint: 'MOVE_POINT'
 } as const

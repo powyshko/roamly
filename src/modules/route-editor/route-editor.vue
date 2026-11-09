@@ -8,6 +8,11 @@ import { useRouteHistory } from "./composables/useRouteHistory";
 
 const points = ref<RoutePoint[]>([]);
 const selectedPointId = ref<string | null>(null);
+const draggingPoint = ref<{
+  uuid: string;
+  oldCoordinate: Coordinate;
+} | null>(null);
+
 const { canUndo, pushAction, undo } = useRouteHistory();
 
 const selectedPoint = computed(() =>
@@ -111,7 +116,61 @@ const handleUndo = () => {
 
       break;
     }
+
+    case HistoryActionType.MovePoint: {
+      const point = points.value.find(
+        (point) => point.uuid === action.uuid,
+      );
+
+      if (!point) break;
+
+      point.coordinate = [...action.oldCoordinate];
+
+      break;
+    }
   }
+};
+
+const onPointDragStart = (uuid: string) => {
+  const point = points.value.find((point) => point.uuid === uuid);
+
+  if (!point) return;
+
+  draggingPoint.value = {
+    uuid,
+    oldCoordinate: [...point.coordinate],
+  };
+};
+
+const onPointDragEnd = (uuid: string) => {
+  if (!draggingPoint.value || draggingPoint.value.uuid !== uuid) {
+    return;
+  }
+
+  const point = points.value.find((point) => point.uuid === uuid);
+
+  if (!point) {
+    draggingPoint.value = null;
+    return;
+  }
+
+  const oldCoordinate = draggingPoint.value.oldCoordinate;
+  const newCoordinate = [...point.coordinate] as Coordinate;
+
+  const hasChanged =
+    oldCoordinate[0] !== newCoordinate[0] ||
+    oldCoordinate[1] !== newCoordinate[1];
+
+  if (hasChanged) {
+    pushAction({
+      type: HistoryActionType.MovePoint,
+      uuid,
+      oldCoordinate,
+      newCoordinate,
+    });
+  }
+
+  draggingPoint.value = null;
 };
 </script>
 
@@ -127,6 +186,8 @@ const handleUndo = () => {
       @marker-click="setSelectedPointId"
       @delete-point="deletePoint"
       @undo="handleUndo"
+      @point-drag-start="onPointDragStart"
+      @point-drag-end="onPointDragEnd"
     />
   </div>
 </template>

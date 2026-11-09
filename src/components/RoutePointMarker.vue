@@ -10,6 +10,8 @@ type Props = {
 type Emit = {
   pointClick: [uuid: string];
   pointMove: [uuid: string, coordinate: Coordinate];
+  pointDragStart: [uuid: string];
+  pointDragEnd: [uuid: string];
 };
 
 const props = defineProps<Props>();
@@ -18,6 +20,14 @@ const emit = defineEmits<Emit>();
 const onMove = (data: MoveCoordinate) => {
   emit("pointMove", props.point.uuid, [data.lng, data.lat]);
 };
+
+const onDragStart = () => {
+  emit("pointDragStart", props.point.uuid);
+};
+
+const onDragEnd = () => {
+  emit("pointDragEnd", props.point.uuid);
+};
 </script>
 
 <template>
@@ -25,6 +35,8 @@ const onMove = (data: MoveCoordinate) => {
     :coordinates="point.coordinate"
     :draggable="true"
     @update:coordinates="onMove"
+    @dragstart="onDragStart"
+    @dragend="onDragEnd"
   >
     <template #marker>
       <button

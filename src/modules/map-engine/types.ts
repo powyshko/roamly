@@ -7,6 +7,8 @@ export type Emit = {
   lineClick: [value: Coordinate]
   markerClick: [uuid: string]
   deletePoint: [uuid: string]
+  pointDragStart: [uuid: string]
+  pointDragEnd: [uuid: string]
 }
 
 export type Props = {

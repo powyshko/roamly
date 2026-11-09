@@ -67,6 +67,14 @@ const onDeletePoint = () => {
 
   emit('deletePoint', selectedPoint.uuid)
 }
+
+const onDragStartPoint = (uuid: string) => {
+  emit('pointDragStart', uuid);
+};
+
+const onDragEndPoint = (uuid: string) => {
+  emit('pointDragEnd', uuid);
+};
 </script>
 
 <template>
@@ -99,6 +107,8 @@ const onDeletePoint = () => {
         :selected="point.uuid === selectedPoint?.uuid"
         @point-click="onClickTargetMarker"
         @point-move="onMovePoint"
+        @point-drag-start="onDragStartPoint"
+        @point-drag-end="onDragEndPoint"
       />
 
       <MglPopup

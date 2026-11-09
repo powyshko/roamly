@@ -1,7 +1,7 @@
 
 import { computed, ref } from "vue";
 import cloneDeep from "lodash-es/cloneDeep";
-import type { RoutePoint, HistoryActionType } from "@/shared/types";
+import type { RoutePoint, HistoryActionType, Coordinate } from "@/shared/types";
 
 const HISTORY_LIMIT = 50;
 
@@ -15,6 +15,12 @@ type HistoryAction =
       type: typeof HistoryActionType.DeletePoint;
       point: RoutePoint;
       index: number;
+    }
+  | {
+      type: typeof HistoryActionType.MovePoint;
+      uuid: string;
+      oldCoordinate: Coordinate;
+      newCoordinate: Coordinate;
     };
 
 export const useRouteHistory = () => {

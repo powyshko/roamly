@@ -9,6 +9,7 @@ import { routeStorage } from "@/modules/storage";
 import { useRoute, useRouter } from "vue-router";
 import { useMessage } from "naive-ui";
 import RoutePropertiesPanel from "./parts/route-properties-panel.vue";
+import { length, lineString } from "@turf/turf";
 
 const route = ref<Route>({
   uuid: crypto.randomUUID(),
@@ -44,6 +45,26 @@ const selectedPoint = computed(() =>
     (point) => point.uuid === selectedPointId.value,
   ),
 );
+
+const routeDistance = computed(() => {
+  if (route.value.points.length < 2) {
+    return "—";
+  }
+
+  const coordinates = route.value.points.map(
+    (point) => point.coordinate,
+  );
+
+  const distance = length(lineString(coordinates), {
+    units: "kilometers",
+  });
+
+  if (distance < 1) {
+    return `${Math.round(distance * 1000)} м`;
+  }
+
+  return `${distance.toFixed(1)} км`;
+});
 
 const addPoint = (coordinate: Coordinate) => {
   const point: RoutePoint = {
@@ -302,6 +323,8 @@ onMounted(() => {
     <RoutePropertiesPanel
       v-model:title="route.title"
       v-model:description="route.description"
+      :points-count="route.points.length"
+      :route-distance="routeDistance"
     />
   </div>
 </template>

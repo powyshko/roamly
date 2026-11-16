@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { NButton, NText, NForm, NFormItem, NInput } from "naive-ui";
+import { NButton, NText, NForm, NFormItem, NInput, NDescriptions, NDescriptionsItem } from "naive-ui";
 import { ChevronBackOutline, ChevronForwardOutline } from '@vicons/ionicons5'
+
+type Props = {
+  pointsCount: number;
+  routeDistance: string;
+}
+
+const { pointsCount, routeDistance } = defineProps<Props>()
 
 const title = defineModel<string>("title", {
   required: true,
@@ -21,7 +28,10 @@ const isOpen = ref(false)
     aria-label="Настройки маршрута"
   >
     <header class="properties-panel-header">
-      <NText v-if="isOpen" class="properties-panel-title">Настройки маршрута</NText>
+      <NText
+        v-if="isOpen"
+        class="properties-panel-title"
+      >Настройки маршрута</NText>
 
       <NButton
         quaternary
@@ -39,7 +49,26 @@ const isOpen = ref(false)
       </NButton>
     </header>
 
-    <div v-if="isOpen" class="properties-panel-content">
+    <div
+      v-if="isOpen"
+      class="properties-panel-content"
+    >
+      <NDescriptions
+        class="properties-panel-info-route"
+        :column="1"
+        label-placement="left"
+        bordered
+        size="small"
+      >
+        <NDescriptionsItem label="Количество точек">
+          {{ pointsCount }}
+        </NDescriptionsItem>
+
+        <NDescriptionsItem label="Протяжённость">
+          {{ routeDistance }}
+        </NDescriptionsItem>
+      </NDescriptions>
+
       <NForm label-placement="top">
         <NFormItem label="Название маршрута">
           <NInput
@@ -114,6 +143,10 @@ const isOpen = ref(false)
   padding: 20px;
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+
+.properties-panel-info-route {
+  margin-bottom: 12px;
 }
 
 .properties-panel--collapsed {

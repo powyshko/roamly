@@ -2,6 +2,7 @@ import type { Coordinate, RoutePoint } from '@/shared/types'
 
 export type Emit = {
   undo: []
+  redo: []
   mapClick: [value: Coordinate]
   pointMove: [uuid: string, coordinate: Coordinate]
   lineClick: [value: Coordinate]
@@ -13,6 +14,7 @@ export type Emit = {
 
 export type Props = {
   undoDisabled?: boolean
+  redoDisabled?: boolean
   points: RoutePoint[]
   selectedPoint?: RoutePoint
 }

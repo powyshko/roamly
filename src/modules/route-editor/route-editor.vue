@@ -1,22 +1,33 @@
 <script lang="ts" setup>
 import { MapView } from "@/modules/map-engine/public"
-import type { Coordinate, RoutePoint } from "@/shared/types";
+import type { Coordinate, Route, RoutePoint } from "@/shared/types";
 import { HistoryActionType } from "@/shared/types";
 import { computed, ref } from "vue";
 import { findNearestSegment } from "./utils";
 import { useRouteHistory } from "./composables/useRouteHistory";
 
-const points = ref<RoutePoint[]>([]);
+const route = ref<Route>({
+  uuid: crypto.randomUUID(),
+  title: "",
+  description: "",
+  points: [],
+  geometrySource: "manual",
+  geometryStatus: "draft",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+});
+
 const selectedPointId = ref<string | null>(null);
+
 const draggingPoint = ref<{
   uuid: string;
   oldCoordinate: Coordinate;
 } | null>(null);
 
-const { canUndo, pushAction, undo } = useRouteHistory();
+const { canUndo, pushAction, undo, canRedo, redo } = useRouteHistory();
 
 const selectedPoint = computed(() =>
-  points.value.find(
+  route.value.points.find(
     (point) => point.uuid === selectedPointId.value,
   ),
 );
@@ -27,7 +38,7 @@ const addPoint = (coordinate: Coordinate) => {
     coordinate,
   };
 
-  const index = points.value.length;
+  const index = route.value.points.length;
 
   pushAction({
     type: HistoryActionType.AddPoint,
@@ -35,11 +46,11 @@ const addPoint = (coordinate: Coordinate) => {
     index,
   });
 
-  points.value.push(point);
+  route.value.points.push(point);
 }
 
 const movePoint = (uuid: string, coordinate: Coordinate) => {
-  const point = points.value.find((point) => point.uuid === uuid);
+  const point = route.value.points.find((point) => point.uuid === uuid);
 
   if (!point) return;
 
@@ -47,7 +58,7 @@ const movePoint = (uuid: string, coordinate: Coordinate) => {
 };
 
 const insertPoint = (coordinate: Coordinate) => {
-  const index = findNearestSegment(points.value, coordinate);
+  const index = findNearestSegment(route.value.points, coordinate);
 
   if (index === -1) return;
 
@@ -64,7 +75,7 @@ const insertPoint = (coordinate: Coordinate) => {
     index: insertIndex,
   });
 
-  points.value.splice(insertIndex, 0, point);
+  route.value.points.splice(insertIndex, 0, point);
 };
 
 const setSelectedPointId = (uuid: string) => {
@@ -72,13 +83,13 @@ const setSelectedPointId = (uuid: string) => {
 }
 
 const deletePoint = (uuid: string) => {
-  const index = points.value.findIndex(
+  const index = route.value.points.findIndex(
     (point) => point.uuid === uuid,
   );
 
   if (index === -1) return;
 
-  const point = points.value[index];
+  const point = route.value.points[index];
 
   pushAction({
     type: HistoryActionType.DeletePoint,
@@ -86,7 +97,7 @@ const deletePoint = (uuid: string) => {
     index,
   });
 
-  points.value.splice(index, 1);
+  route.value.points.splice(index, 1);
 
   selectedPointId.value = null;
 };
@@ -98,7 +109,7 @@ const handleUndo = () => {
 
   switch (action.type) {
     case HistoryActionType.AddPoint: {
-      points.value.splice(action.index, 1);
+      route.value.points.splice(action.index, 1);
 
       if (selectedPointId.value === action.point.uuid) {
         selectedPointId.value = null;
@@ -108,7 +119,7 @@ const handleUndo = () => {
     }
 
     case HistoryActionType.DeletePoint: {
-      points.value.splice(
+      route.value.points.splice(
         action.index,
         0,
         action.point,
@@ -118,7 +129,7 @@ const handleUndo = () => {
     }
 
     case HistoryActionType.MovePoint: {
-      const point = points.value.find(
+      const point = route.value.points.find(
         (point) => point.uuid === action.uuid,
       );
 
@@ -131,8 +142,48 @@ const handleUndo = () => {
   }
 };
 
+const handleRedo = () => {
+  const action = redo();
+
+  if (!action) return;
+
+  switch (action.type) {
+    case HistoryActionType.AddPoint: {
+      route.value.points.splice(
+        action.index,
+        0,
+        action.point,
+      );
+
+      break;
+    }
+
+    case HistoryActionType.DeletePoint: {
+     route.value.points.splice(action.index, 1);
+
+      if (selectedPointId.value === action.point.uuid) {
+        selectedPointId.value = null;
+      }
+
+      break;
+    }
+
+    case HistoryActionType.MovePoint: {
+      const point = route.value.points.find(
+        (point) => point.uuid === action.uuid,
+      );
+
+      if (!point) break;
+
+      point.coordinate = [...action.newCoordinate];
+
+      break;
+    }
+  }
+};
+
 const onPointDragStart = (uuid: string) => {
-  const point = points.value.find((point) => point.uuid === uuid);
+  const point = route.value.points.find((point) => point.uuid === uuid);
 
   if (!point) return;
 
@@ -147,7 +198,7 @@ const onPointDragEnd = (uuid: string) => {
     return;
   }
 
-  const point = points.value.find((point) => point.uuid === uuid);
+  const point = route.value.points.find((point) => point.uuid === uuid);
 
   if (!point) {
     draggingPoint.value = null;
@@ -177,15 +228,17 @@ const onPointDragEnd = (uuid: string) => {
 <template>
   <div class="route-editor">
     <MapView
-      :points="points"
+      :points="route.points"
       :selected-point="selectedPoint"
-      :undo-disabled="canUndo"
+      :undo-disabled="!canUndo"
+      :redo-disabled="!canRedo"
       @map-click="addPoint"
       @point-move="movePoint"
       @line-click="insertPoint"
       @marker-click="setSelectedPointId"
       @delete-point="deletePoint"
       @undo="handleUndo"
+      @redo="handleRedo"
       @point-drag-start="onPointDragStart"
       @point-drag-end="onPointDragEnd"
     />

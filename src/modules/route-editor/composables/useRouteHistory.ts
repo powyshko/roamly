@@ -24,30 +24,53 @@ type HistoryAction =
     };
 
 export const useRouteHistory = () => {
-  const history = ref<HistoryAction[]>([]);
+  const undoStack = ref<HistoryAction[]>([]);
+  const redoStack = ref<HistoryAction[]>([]);
 
-  const canUndo = computed(() => history.value.length > 0);
+  const canUndo = computed(() => undoStack.value.length > 0);
+  const canRedo = computed(() => redoStack.value.length > 0);
 
   const pushAction = (action: HistoryAction) => {
-    history.value.push(cloneDeep(action));
+    undoStack.value.push(cloneDeep(action));
 
-    if (history.value.length > HISTORY_LIMIT) {
-      history.value.shift();
+    if (undoStack.value.length > HISTORY_LIMIT) {
+      undoStack.value.shift();
     }
+
+    redoStack.value = [];
   };
 
   const undo = (): HistoryAction | null => {
-    return history.value.pop() ?? null;
+    const action = undoStack.value.pop();
+
+    if (!action) return null;
+
+    redoStack.value.push(action);
+
+    return action;
+  };
+
+ const redo = (): HistoryAction | null => {
+    const action = redoStack.value.pop();
+
+    if (!action) return null;
+
+    undoStack.value.push(action);
+
+    return action;
   };
 
   const clear = () => {
-    history.value = [];
+    undoStack.value = [];
+    redoStack.value = [];
   };
 
   return {
     canUndo,
+    canRedo,
     pushAction,
     undo,
+    redo,
     clear,
   };
 };

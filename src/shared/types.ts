@@ -18,3 +18,18 @@ export const HistoryActionType = {
   DeletePoint: 'DELETE_POINT',
   MovePoint: 'MOVE_POINT'
 } as const
+
+export type RouteGeometrySource = "manual" | "routing";
+
+export type RouteGeometryStatus = "draft" | "approved";
+
+export interface Route {
+  uuid: string;
+  title: string;
+  description: string;
+  points: RoutePoint[];
+  geometrySource: RouteGeometrySource;
+  geometryStatus: RouteGeometryStatus;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -4,6 +4,8 @@ import { computed } from 'vue';
 import { length, lineString } from '@turf/turf';
 import { TrashOutline } from '@vicons/ionicons5';
 import type { Route } from '@/shared/types';
+import { format, isToday, isYesterday, parseISO } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 type Props = {
   route: Route;
@@ -32,6 +34,22 @@ const routeDistance = computed(() => {
   }
 
   return `${distance.toFixed(1)} км`;
+});
+
+const updatedAtLabel = computed(() => {
+  const date = parseISO(route.updatedAt);
+
+  if (isToday(date)) {
+    return `Сегодня, ${format(date, 'HH:mm')}`;
+  }
+
+  if (isYesterday(date)) {
+    return `Вчера, ${format(date, 'HH:mm')}`;
+  }
+
+  return format(date, 'd MMM, HH:mm', {
+    locale: ru,
+  });
 });
 </script>
 
@@ -101,11 +119,20 @@ const routeDistance = computed(() => {
           align="center"
           :size="8"
         >
+          <NText
+            depth="3"
+            size="small"
+          >
+            {{ updatedAtLabel }}
+          </NText>
+
           <NButton
             size="small"
             type="primary"
             @click="emit('open', route.uuid)"
-          > Открыть </NButton>
+          >
+            Открыть
+          </NButton>
 
           <NPopconfirm
             positive-text="Удалить"

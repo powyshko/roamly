@@ -2,10 +2,12 @@
 import { MapView } from "@/modules/map-engine"
 import type { Coordinate, Route, RoutePoint } from "@/shared/types";
 import { HistoryActionType } from "@/shared/types";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { findNearestSegment } from "./utils";
 import { useRouteHistory } from "./composables/useRouteHistory";
 import { routeStorage } from "@/modules/storage";
+import { useRoute, useRouter } from "vue-router";
+import { useMessage } from "naive-ui";
 
 const route = ref<Route>({
   uuid: crypto.randomUUID(),
@@ -26,6 +28,15 @@ const draggingPoint = ref<{
 } | null>(null);
 
 const { canUndo, pushAction, undo, canRedo, redo } = useRouteHistory();
+
+const currentRoute = useRoute();
+const router = useRouter();
+
+const routeId = currentRoute.params.uuid as string | undefined;
+
+const message = useMessage();
+
+const isEditMode = computed(() => Boolean(routeId));
 
 const selectedPoint = computed(() =>
   route.value.points.find(
@@ -160,7 +171,7 @@ const handleRedo = () => {
     }
 
     case HistoryActionType.DeletePoint: {
-     route.value.points.splice(action.index, 1);
+      route.value.points.splice(action.index, 1);
 
       if (selectedPointId.value === action.point.uuid) {
         selectedPointId.value = null;
@@ -234,6 +245,33 @@ const saveRoute = async () => {
 
   await routeStorage.save(routeData);
 };
+
+const loadRoute = async () => {
+  if (!routeId) return;
+
+  try {
+    const savedRoute = await routeStorage.getById(routeId);
+
+    if (!savedRoute) {
+      message.error("Маршрут не найден");
+      router.replace({ name: "route-library" });
+      return;
+    }
+
+    route.value = savedRoute;
+  } catch (err) {
+    console.error("Failed to load route:", err);
+
+    message.error("Не удалось загрузить маршрут");
+    router.replace({ name: "route-library" });
+  }
+};
+
+onMounted(() => {
+  if (isEditMode.value) {
+    loadRoute();
+  }
+});
 </script>
 
 <template>

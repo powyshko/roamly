@@ -1,29 +1,29 @@
-
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(),
 
   routes: [
     {
-      path: "/",
-      redirect: "/routes",
+      path: '/',
+      redirect: '/routes',
     },
     {
-      path: "/routes",
-      name: "route-library",
-      component: () =>
-        import("@/modules/route-library/route-library.vue"),
+      path: '/routes',
+      name: 'route-library',
+      component: () => import('@/modules/route-library/route-library.vue'),
     },
     {
-      path: "/routes/new",
-      name: "route-create",
-      component: () =>
-        import("@/modules/route-editor").then(
-          (module) => module.RouteEditor,
-        ),
+      path: '/routes/new',
+      name: 'route-create',
+      component: () => import('@/modules/route-editor').then((module) => module.RouteEditor),
+    },
+    {
+      path: '/routes/:uuid/edit',
+      name: 'route-edit',
+      component: () => import('@/modules/route-editor').then((module) => module.RouteEditor),
     },
   ],
-});
+})
 
-export default router;
+export default router

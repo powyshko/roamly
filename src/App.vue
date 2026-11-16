@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouteEditor } from "@/modules/route-editor/public"
+import { RouteEditor } from "@/modules/route-editor"
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { MapView } from "@/modules/map-engine/public"
+import { MapView } from "@/modules/map-engine"
 import type { Coordinate, Route, RoutePoint } from "@/shared/types";
 import { HistoryActionType } from "@/shared/types";
 import { computed, ref } from "vue";

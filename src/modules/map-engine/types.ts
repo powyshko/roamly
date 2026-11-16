@@ -3,6 +3,7 @@ import type { Coordinate, RoutePoint } from '@/shared/types'
 export type Emit = {
   undo: []
   redo: []
+  saveRoute: []
   mapClick: [value: Coordinate]
   pointMove: [uuid: string, coordinate: Coordinate]
   lineClick: [value: Coordinate]

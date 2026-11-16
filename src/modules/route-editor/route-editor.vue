@@ -5,6 +5,7 @@ import { HistoryActionType } from "@/shared/types";
 import { computed, ref } from "vue";
 import { findNearestSegment } from "./utils";
 import { useRouteHistory } from "./composables/useRouteHistory";
+import { routeStorage } from "@/modules/storage";
 
 const route = ref<Route>({
   uuid: crypto.randomUUID(),
@@ -223,6 +224,16 @@ const onPointDragEnd = (uuid: string) => {
 
   draggingPoint.value = null;
 };
+
+const saveRoute = async () => {
+  route.value.updatedAt = new Date().toISOString();
+
+  const routeData = JSON.parse(
+    JSON.stringify(route.value),
+  ) as Route;
+
+  await routeStorage.save(routeData);
+};
 </script>
 
 <template>
@@ -241,6 +252,7 @@ const onPointDragEnd = (uuid: string) => {
       @redo="handleRedo"
       @point-drag-start="onPointDragStart"
       @point-drag-end="onPointDragEnd"
+      @save-route="saveRoute"
     />
   </div>
 </template>

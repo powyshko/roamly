@@ -13,7 +13,8 @@ import type { Emit, Props } from '@/modules/map-engine/types'
 import type { Coordinate } from '@/shared/types'
 import RoutePointMarker from '@/components/RoutePointMarker.vue'
 import { NButton } from 'naive-ui'
-import { ArrowUndoOutline, TrashOutline, ArrowRedoOutline } from '@vicons/ionicons5'
+import { TrashOutline } from '@vicons/ionicons5'
+import MapActions from './parts/map-actions.vue'
 
 const { points, selectedPoint = undefined, undoDisabled = false, redoDisabled = false } = defineProps<Props>()
 const emit = defineEmits<Emit>()
@@ -79,33 +80,14 @@ const onDragEndPoint = (uuid: string) => {
 
 <template>
   <div class="map-view">
-    <NButton
-      class="undo-button"
-      type="info"
-      circle
-      :disabled="undoDisabled"
-      aria-label="Отменить последнее изменение маршрута"
-      title="Отменить последнее изменение"
-      @click.stop="emit('undo')"
-    >
-      <template #icon>
-        <ArrowUndoOutline />
-      </template>
-    </NButton>
-
-    <NButton
-      class="redo-button"
-      type="info"
-      circle
-      :disabled="redoDisabled"
-      aria-label="Повторить последнее действие"
-      title="Повторить последнее действие"
-      @click.stop="emit('redo')"
-    >
-      <template #icon>
-        <ArrowRedoOutline />
-      </template>
-    </NButton>
+    <MapActions
+      class="map-view-actions"
+      :redo-disabled="redoDisabled"
+      :undo-disabled="undoDisabled"
+      @redo="emit('redo')"
+      @undo="emit('undo')"
+      @save-route="emit('saveRoute')"
+    />
 
     <MglMap
       :map-style="mapStyle"
@@ -169,17 +151,10 @@ const onDragEndPoint = (uuid: string) => {
   min-height: 400px;
 }
 
-.undo-button {
+.map-view-actions {
   position: absolute;
   top: 10px;
   left: 10px;
-  z-index: 2;
-}
-
-.redo-button {
-  position: absolute;
-  top: 10px;
-  left: 50px;
   z-index: 2;
 }
 

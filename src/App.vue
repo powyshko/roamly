@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import {
-  NConfigProvider,
-  NMessageProvider,
-} from "naive-ui";
-import { RouterView } from "vue-router";
+import { NConfigProvider, NMessageProvider } from 'naive-ui';
+import { RouterView } from 'vue-router';
 
-import { themeOverrides } from "@/app/theme";
+import { themeOverrides } from '@/app/theme';
 </script>
 
 <template>

@@ -1,28 +1,33 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref } from 'vue';
 import {
   MglMap,
   MglNavigationControl,
   type MglEvent,
   MglGeoJsonSource,
   MglLineLayer,
-} from '@indoorequal/vue-maplibre-gl'
-import { mapStyle, layout, paint, LAYER_ID } from '@/modules/map-engine/consts'
-import 'maplibre-gl/dist/maplibre-gl.css'
-import type { Emit, Props } from '@/modules/map-engine/types'
-import type { Coordinate } from '@/shared/types'
-import RoutePointMarker from '@/components/RoutePointMarker.vue'
-import { NButton } from 'naive-ui'
-import { TrashOutline } from '@vicons/ionicons5'
-import MapActions from './parts/map-actions.vue'
+} from '@indoorequal/vue-maplibre-gl';
+import { mapStyle, layout, paint, LAYER_ID } from '@/modules/map-engine/consts';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import type { Emit, Props } from '@/modules/map-engine/types';
+import type { Coordinate } from '@/shared/types';
+import RoutePointMarker from '@/components/RoutePointMarker.vue';
+import { NButton } from 'naive-ui';
+import { TrashOutline } from '@vicons/ionicons5';
+import MapActions from './parts/map-actions.vue';
 
-const { points, selectedPoint = undefined, undoDisabled = false, redoDisabled = false } = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const {
+  points,
+  selectedPoint = undefined,
+  undoDisabled = false,
+  redoDisabled = false,
+} = defineProps<Props>();
+const emit = defineEmits<Emit>();
 
-const center = ref<[number, number]>([109.1967, 12.2388])
-const zoom = ref(12)
+const center = ref<[number, number]>([109.1967, 12.2388]);
+const zoom = ref(12);
 
-const coordinates = computed(() => points.map((point) => point.coordinate))
+const coordinates = computed(() => points.map((point) => point.coordinate));
 
 const routeGeoJson = computed(() => ({
   type: 'Feature' as const,
@@ -31,43 +36,43 @@ const routeGeoJson = computed(() => ({
     type: 'LineString' as const,
     coordinates: coordinates.value,
   },
-}))
+}));
 
 const onMapClick = (data: MglEvent<'click'>) => {
-  const event = data.event
-  const map = event.target
-  const layerId = LAYER_ID
-  const coordinate: Coordinate = [event.lngLat.lng, event.lngLat.lat]
+  const event = data.event;
+  const map = event.target;
+  const layerId = LAYER_ID;
+  const coordinate: Coordinate = [event.lngLat.lng, event.lngLat.lat];
 
   const clickedLine =
     !!map.getLayer(layerId) &&
     map.queryRenderedFeatures(event.point, {
       layers: [layerId],
-    }).length > 0
+    }).length > 0;
 
   if (clickedLine) {
-    emit('markerClick', '')
-    emit('lineClick', coordinate)
-    return
+    emit('markerClick', '');
+    emit('lineClick', coordinate);
+    return;
   }
 
-  emit('markerClick', '')
-  emit('mapClick', coordinate)
-}
+  emit('markerClick', '');
+  emit('mapClick', coordinate);
+};
 
 const onMovePoint = (uuidPoint: string, coordinate: Coordinate) => {
-  emit('pointMove', uuidPoint, coordinate)
-}
+  emit('pointMove', uuidPoint, coordinate);
+};
 
 const onClickTargetMarker = (uuid: string) => {
-  emit('markerClick', uuid)
-}
+  emit('markerClick', uuid);
+};
 
 const onDeletePoint = () => {
-  if (!selectedPoint) return
+  if (!selectedPoint) return;
 
-  emit('deletePoint', selectedPoint.uuid)
-}
+  emit('deletePoint', selectedPoint.uuid);
+};
 
 const onDragStartPoint = (uuid: string) => {
   emit('pointDragStart', uuid);
@@ -90,12 +95,7 @@ const onDragEndPoint = (uuid: string) => {
       @back="emit('back')"
     />
 
-    <MglMap
-      :map-style="mapStyle"
-      :center="center"
-      :zoom="zoom"
-      @map:click="onMapClick"
-    >
+    <MglMap :map-style="mapStyle" :center="center" :zoom="zoom" @map:click="onMapClick">
       <MglNavigationControl position="top-right" />
 
       <RoutePointMarker
@@ -109,11 +109,7 @@ const onDragEndPoint = (uuid: string) => {
         @point-drag-end="onDragEndPoint"
       />
 
-      <MglPopup
-        v-if="selectedPoint"
-        :coordinates="selectedPoint.coordinate"
-        :close-button="false"
-      >
+      <MglPopup v-if="selectedPoint" :coordinates="selectedPoint.coordinate" :close-button="false">
         <NButton
           type="error"
           quaternary
@@ -129,16 +125,8 @@ const onDragEndPoint = (uuid: string) => {
         </NButton>
       </MglPopup>
 
-      <MglGeoJsonSource
-        v-if="points.length >= 2"
-        source-id="draft-route"
-        :data="routeGeoJson"
-      >
-        <MglLineLayer
-          :layer-id="LAYER_ID"
-          :layout="layout"
-          :paint="paint"
-        />
+      <MglGeoJsonSource v-if="points.length >= 2" source-id="draft-route" :data="routeGeoJson">
+        <MglLineLayer :layer-id="LAYER_ID" :layout="layout" :paint="paint" />
       </MglGeoJsonSource>
     </MglMap>
   </div>

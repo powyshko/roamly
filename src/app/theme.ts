@@ -1,4 +1,4 @@
-import type { GlobalThemeOverrides } from 'naive-ui'
+import type { GlobalThemeOverrides } from 'naive-ui';
 
 export const themeOverrides: GlobalThemeOverrides = {
   common: {
@@ -97,4 +97,4 @@ export const themeOverrides: GlobalThemeOverrides = {
     titleTextColor: 'var(--color-text-primary)',
     borderRadius: '12px',
   },
-}
+};

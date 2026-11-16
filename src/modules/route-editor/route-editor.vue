@@ -1,23 +1,23 @@
 <script lang="ts" setup>
-import { MapView } from "@/modules/map-engine"
-import type { Coordinate, Route, RoutePoint } from "@/shared/types";
-import { HistoryActionType } from "@/shared/types";
-import { computed, ref, onMounted } from "vue";
-import { findNearestSegment } from "./utils";
-import { useRouteHistory } from "./composables/useRouteHistory";
-import { routeStorage } from "@/modules/storage";
-import { useRoute, useRouter } from "vue-router";
-import { useMessage } from "naive-ui";
-import RoutePropertiesPanel from "./parts/route-properties-panel.vue";
-import { length, lineString } from "@turf/turf";
+import { MapView } from '@/modules/map-engine';
+import type { Coordinate, Route, RoutePoint } from '@/shared/types';
+import { HistoryActionType, RouteGeometrySource, RouteGeometryStatus } from '@/shared/types';
+import { computed, ref, onMounted } from 'vue';
+import { findNearestSegment } from './utils';
+import { useRouteHistory } from './composables/useRouteHistory';
+import { routeStorage } from '@/modules/storage';
+import { useRoute, useRouter } from 'vue-router';
+import { useMessage } from 'naive-ui';
+import RoutePropertiesPanel from './parts/route-properties-panel.vue';
+import { length, lineString } from '@turf/turf';
 
 const route = ref<Route>({
   uuid: crypto.randomUUID(),
-  title: "",
-  description: "",
+  title: '',
+  description: '',
   points: [],
-  geometrySource: "manual",
-  geometryStatus: "draft",
+  geometrySource: RouteGeometrySource.Manual,
+  geometryStatus: RouteGeometryStatus.Draft,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 });
@@ -41,22 +41,18 @@ const message = useMessage();
 const isEditMode = computed(() => Boolean(routeId));
 
 const selectedPoint = computed(() =>
-  route.value.points.find(
-    (point) => point.uuid === selectedPointId.value,
-  ),
+  route.value.points.find((point) => point.uuid === selectedPointId.value),
 );
 
 const routeDistance = computed(() => {
   if (route.value.points.length < 2) {
-    return "—";
+    return '—';
   }
 
-  const coordinates = route.value.points.map(
-    (point) => point.coordinate,
-  );
+  const coordinates = route.value.points.map((point) => point.coordinate);
 
   const distance = length(lineString(coordinates), {
-    units: "kilometers",
+    units: 'kilometers',
   });
 
   if (distance < 1) {
@@ -81,7 +77,7 @@ const addPoint = (coordinate: Coordinate) => {
   });
 
   route.value.points.push(point);
-}
+};
 
 const movePoint = (uuid: string, coordinate: Coordinate) => {
   const point = route.value.points.find((point) => point.uuid === uuid);
@@ -114,12 +110,10 @@ const insertPoint = (coordinate: Coordinate) => {
 
 const setSelectedPointId = (uuid: string) => {
   selectedPointId.value = uuid;
-}
+};
 
 const deletePoint = (uuid: string) => {
-  const index = route.value.points.findIndex(
-    (point) => point.uuid === uuid,
-  );
+  const index = route.value.points.findIndex((point) => point.uuid === uuid);
 
   if (index === -1) return;
 
@@ -153,19 +147,13 @@ const handleUndo = () => {
     }
 
     case HistoryActionType.DeletePoint: {
-      route.value.points.splice(
-        action.index,
-        0,
-        action.point,
-      );
+      route.value.points.splice(action.index, 0, action.point);
 
       break;
     }
 
     case HistoryActionType.MovePoint: {
-      const point = route.value.points.find(
-        (point) => point.uuid === action.uuid,
-      );
+      const point = route.value.points.find((point) => point.uuid === action.uuid);
 
       if (!point) break;
 
@@ -183,11 +171,7 @@ const handleRedo = () => {
 
   switch (action.type) {
     case HistoryActionType.AddPoint: {
-      route.value.points.splice(
-        action.index,
-        0,
-        action.point,
-      );
+      route.value.points.splice(action.index, 0, action.point);
 
       break;
     }
@@ -203,9 +187,7 @@ const handleRedo = () => {
     }
 
     case HistoryActionType.MovePoint: {
-      const point = route.value.points.find(
-        (point) => point.uuid === action.uuid,
-      );
+      const point = route.value.points.find((point) => point.uuid === action.uuid);
 
       if (!point) break;
 
@@ -242,9 +224,7 @@ const onPointDragEnd = (uuid: string) => {
   const oldCoordinate = draggingPoint.value.oldCoordinate;
   const newCoordinate = [...point.coordinate] as Coordinate;
 
-  const hasChanged =
-    oldCoordinate[0] !== newCoordinate[0] ||
-    oldCoordinate[1] !== newCoordinate[1];
+  const hasChanged = oldCoordinate[0] !== newCoordinate[0] || oldCoordinate[1] !== newCoordinate[1];
 
   if (hasChanged) {
     pushAction({
@@ -261,9 +241,7 @@ const onPointDragEnd = (uuid: string) => {
 const saveRoute = async () => {
   route.value.updatedAt = new Date().toISOString();
 
-  const routeData = JSON.parse(
-    JSON.stringify(route.value),
-  ) as Route;
+  const routeData = JSON.parse(JSON.stringify(route.value)) as Route;
 
   await routeStorage.save(routeData);
 };
@@ -275,22 +253,22 @@ const loadRoute = async () => {
     const savedRoute = await routeStorage.getById(routeId);
 
     if (!savedRoute) {
-      message.error("Маршрут не найден");
-      router.replace({ name: "route-library" });
+      message.error('Маршрут не найден');
+      router.replace({ name: 'route-library' });
       return;
     }
 
     route.value = savedRoute;
   } catch (err) {
-    console.error("Failed to load route:", err);
+    console.error('Failed to load route:', err);
 
-    message.error("Не удалось загрузить маршрут");
-    router.replace({ name: "route-library" });
+    message.error('Не удалось загрузить маршрут');
+    router.replace({ name: 'route-library' });
   }
 };
 
 const goToRouteLibrary = () => {
-  router.push({ name: "route-library" });
+  router.push({ name: 'route-library' });
 };
 
 onMounted(() => {
@@ -325,6 +303,8 @@ onMounted(() => {
       v-model:description="route.description"
       :points-count="route.points.length"
       :route-distance="routeDistance"
+      :geometry-source="route.geometrySource"
+      :geometry-status="route.geometryStatus"
     />
   </div>
 </template>

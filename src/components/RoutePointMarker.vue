@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { MglMarker } from "@indoorequal/vue-maplibre-gl";
-import type { Coordinate, MoveCoordinate, RoutePoint } from "@/shared/types";
+import { MglMarker } from '@indoorequal/vue-maplibre-gl';
+import type { Coordinate, MoveCoordinate, RoutePoint } from '@/shared/types';
 
 type Props = {
   point: RoutePoint;
@@ -18,15 +18,15 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emit>();
 
 const onMove = (data: MoveCoordinate) => {
-  emit("pointMove", props.point.uuid, [data.lng, data.lat]);
+  emit('pointMove', props.point.uuid, [data.lng, data.lat]);
 };
 
 const onDragStart = () => {
-  emit("pointDragStart", props.point.uuid);
+  emit('pointDragStart', props.point.uuid);
 };
 
 const onDragEnd = () => {
-  emit("pointDragEnd", props.point.uuid);
+  emit('pointDragEnd', props.point.uuid);
 };
 </script>
 

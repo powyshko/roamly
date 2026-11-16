@@ -1,24 +1,47 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { NButton, NText, NForm, NFormItem, NInput, NDescriptions, NDescriptionsItem } from "naive-ui";
-import { ChevronBackOutline, ChevronForwardOutline } from '@vicons/ionicons5'
+import { computed, ref } from 'vue';
+import {
+  NButton,
+  NText,
+  NForm,
+  NFormItem,
+  NInput,
+  NDescriptions,
+  NDescriptionsItem,
+} from 'naive-ui';
+import { ChevronBackOutline, ChevronForwardOutline } from '@vicons/ionicons5';
+import { RouteGeometrySource, RouteGeometryStatus } from '@/shared/types';
 
 type Props = {
   pointsCount: number;
   routeDistance: string;
-}
+  geometrySource: RouteGeometrySource;
+  geometryStatus: RouteGeometryStatus;
+};
 
-const { pointsCount, routeDistance } = defineProps<Props>()
+const { pointsCount, routeDistance, geometrySource, geometryStatus } = defineProps<Props>();
 
-const title = defineModel<string>("title", {
+const title = defineModel<string>('title', {
   required: true,
 });
 
-const description = defineModel<string>("description", {
+const description = defineModel<string>('description', {
   required: true,
 });
 
-const isOpen = ref(false)
+const isOpen = ref(false);
+
+const geometrySourceLabel = computed(() =>
+  geometrySource === RouteGeometrySource.Manual ? 'Ручное построение' : 'Маршрутизация',
+);
+
+const geometryStatusLabel = computed(() =>
+  geometryStatus === RouteGeometryStatus.Approved ? 'Утверждён' : 'Черновик',
+);
+
+const geometryStatusType = computed(() =>
+  geometryStatus === RouteGeometryStatus.Approved ? 'success' : 'warning',
+);
 </script>
 
 <template>
@@ -28,10 +51,7 @@ const isOpen = ref(false)
     aria-label="Настройки маршрута"
   >
     <header class="properties-panel-header">
-      <NText
-        v-if="isOpen"
-        class="properties-panel-title"
-      >Настройки маршрута</NText>
+      <NText v-if="isOpen" class="properties-panel-title"> Настройки маршрута </NText>
 
       <NButton
         quaternary
@@ -49,26 +69,8 @@ const isOpen = ref(false)
       </NButton>
     </header>
 
-    <div
-      v-if="isOpen"
-      class="properties-panel-content"
-    >
-      <NDescriptions
-        class="properties-panel-info-route"
-        :column="1"
-        label-placement="left"
-        bordered
-        size="small"
-      >
-        <NDescriptionsItem label="Количество точек">
-          {{ pointsCount }}
-        </NDescriptionsItem>
-
-        <NDescriptionsItem label="Протяжённость">
-          {{ routeDistance }}
-        </NDescriptionsItem>
-      </NDescriptions>
-
+    <div v-if="isOpen" class="properties-panel-content">
+      <!-- Основные параметры -->
       <NForm label-placement="top">
         <NFormItem label="Название маршрута">
           <NInput
@@ -88,6 +90,44 @@ const isOpen = ref(false)
           />
         </NFormItem>
       </NForm>
+
+      <NDivider />
+
+      <!-- Информация о маршруте -->
+      <NText strong tag="div" class="properties-panel-section-title"> Информация о маршруте </NText>
+
+      <NDescriptions
+        class="properties-panel-info-route"
+        :column="1"
+        label-placement="left"
+        bordered
+        size="small"
+      >
+        <NDescriptionsItem label="Количество точек">
+          {{ pointsCount }}
+        </NDescriptionsItem>
+
+        <NDescriptionsItem label="Протяжённость">
+          {{ routeDistance }}
+        </NDescriptionsItem>
+      </NDescriptions>
+
+      <NDivider />
+
+      <!-- Характеристики геометрии -->
+      <NText strong tag="div" class="properties-panel-section-title"> Геометрия маршрута </NText>
+
+      <NDescriptions :column="1" label-placement="left" bordered size="small">
+        <NDescriptionsItem label="Источник">
+          {{ geometrySourceLabel }}
+        </NDescriptionsItem>
+
+        <NDescriptionsItem label="Статус">
+          <NTag :type="geometryStatusType">
+            {{ geometryStatusLabel }}
+          </NTag>
+        </NDescriptionsItem>
+      </NDescriptions>
     </div>
   </aside>
 </template>

@@ -1,18 +1,18 @@
 <script lang="ts" setup>
-import { NButton } from 'naive-ui'
-import { ArrowUndoOutline, ArrowRedoOutline, ArrowBackOutline } from '@vicons/ionicons5'
+import { NButton } from 'naive-ui';
+import { ArrowUndoOutline, ArrowRedoOutline, ArrowBackOutline } from '@vicons/ionicons5';
 
 type Props = {
   undoDisabled: boolean;
   redoDisabled: boolean;
-}
+};
 
 type Emit = {
-  undo: []
-  redo: []
-  saveRoute: []
-  back: []
-}
+  undo: [];
+  redo: [];
+  saveRoute: [];
+  back: [];
+};
 
 const { undoDisabled, redoDisabled } = defineProps<Props>();
 const emit = defineEmits<Emit>();
@@ -48,18 +48,11 @@ const emit = defineEmits<Emit>();
       </template>
     </NButton>
 
-    <NButton
-      class="save-button"
-      type="primary"
-      @click.stop="emit('saveRoute')"
-    >
+    <NButton class="save-button" type="primary" @click.stop="emit('saveRoute')">
       Сохранить
     </NButton>
 
-    <NButton
-      type="primary"
-      @click="emit('back')"
-    >
+    <NButton type="primary" @click="emit('back')">
       <template #icon>
         <ArrowBackOutline />
       </template>

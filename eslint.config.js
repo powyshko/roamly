@@ -1,10 +1,10 @@
-import js from '@eslint/js'
-import tsParser from '@typescript-eslint/parser'
-import prettier from 'eslint-config-prettier/flat'
-import unusedImports from 'eslint-plugin-unused-imports'
-import vue from 'eslint-plugin-vue'
-import globals from 'globals'
-import tseslint from 'typescript-eslint'
+import js from '@eslint/js';
+import tsParser from '@typescript-eslint/parser';
+import prettier from 'eslint-config-prettier/flat';
+import unusedImports from 'eslint-plugin-unused-imports';
+import vue from 'eslint-plugin-vue';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   { ignores: ['dist/**', 'dist-ssr/**', 'coverage/**'] },
@@ -56,4 +56,4 @@ export default tseslint.config(
   },
   // Formatting is handled by Prettier; disable conflicting lint rules.
   prettier,
-)
+);

@@ -1,7 +1,6 @@
-
-import { computed, ref } from "vue";
-import cloneDeep from "lodash-es/cloneDeep";
-import type { RoutePoint, HistoryActionType, Coordinate } from "@/shared/types";
+import { computed, ref } from 'vue';
+import cloneDeep from 'lodash-es/cloneDeep';
+import type { RoutePoint, HistoryActionType, Coordinate } from '@/shared/types';
 
 const HISTORY_LIMIT = 50;
 
@@ -50,7 +49,7 @@ export const useRouteHistory = () => {
     return action;
   };
 
- const redo = (): HistoryAction | null => {
+  const redo = (): HistoryAction | null => {
     const action = redoStack.value.pop();
 
     if (!action) return null;

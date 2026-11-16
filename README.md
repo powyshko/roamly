@@ -5,8 +5,8 @@
 Алиас `@` указывает на `src/` и настроен в Vite и TypeScript. Например:
 
 ```ts
-import HelloWorld from '@/components/HelloWorld.vue'
-import '@/styles/style.css'
+import HelloWorld from '@/components/HelloWorld.vue';
+import '@/styles/style.css';
 ```
 
 Цветовые CSS-переменные находятся в `src/styles/variables.css` и подключены в `src/main.ts`.
@@ -45,9 +45,11 @@ npm run build
 
 ESLint использует flat config (`eslint.config.js`) и рекомендуемые правила JavaScript,
 TypeScript и Vue. Prettier отвечает за оформление: отступы в два пробела, одинарные
-кавычки в JavaScript/TypeScript, без точек с запятой, ширина строки 100 символов.
+кавычки в JavaScript/TypeScript, с точками с запятой, ширина строки 100 символов.
 `eslint-config-prettier` отключает конфликтующие правила ESLint.
 Проверка типов выполняется отдельно через `vue-tsc`.
+В приложении разрешены TypeScript `enum` (`erasableSyntaxOnly: false` в
+`tsconfig.app.json`); используйте именованные элементы, например `RouteGeometrySource.Manual`.
 В `src/` вызовы `console.log` запрещены правилом ESLint `no-restricted-properties`
 и приводят к ошибке проверки. Остальные методы `console` этим правилом не запрещены.
 Версии `typescript-eslint` и `@typescript-eslint/parser` закреплены для совместимости

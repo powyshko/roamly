@@ -1,1 +1,1 @@
-export { routeStorage } from "./route-storage";
+export { routeStorage } from './route-storage';

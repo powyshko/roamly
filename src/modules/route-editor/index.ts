@@ -1,1 +1,1 @@
-export { default as RouteEditor } from "./route-editor.vue";
+export { default as RouteEditor } from './route-editor.vue';

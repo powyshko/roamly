@@ -250,6 +250,16 @@ const onPointDragEnd = (uuid: string) => {
 };
 
 const saveRoute = async () => {
+  if (!route.value.title.trim()) {
+    message.error("Укажите название маршрута");
+    return;
+  }
+
+  if (route.value.points.length < 2) {
+    message.error("Добавьте минимум две точки маршрута");
+    return;
+  }
+
   const routeData = cloneDeep(route.value);
 
   routeData.updatedAt = new Date().toISOString();

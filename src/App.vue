@@ -10,7 +10,7 @@ import { themeOverrides } from "@/app/theme";
 
 <template>
   <NConfigProvider :theme-overrides="themeOverrides">
-    <NMessageProvider>
+    <NMessageProvider placement="bottom">
       <RouterView />
     </NMessageProvider>
   </NConfigProvider>

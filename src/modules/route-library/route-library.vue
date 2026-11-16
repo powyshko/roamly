@@ -14,7 +14,9 @@ import {
   NGrid,
   NGridItem,
   useMessage,
+  NPopconfirm,
 } from "naive-ui";
+import { TrashOutline } from "@vicons/ionicons5";
 import { AddOutline } from "@vicons/ionicons5";
 import { routeStorage } from "@/modules/storage";
 import type { Route } from "@/shared/types";
@@ -29,7 +31,11 @@ const loadRoutes = async () => {
   try {
     isLoading.value = true;
 
-    routes.value = await routeStorage.getAll();
+    routes.value = (await routeStorage.getAll()).sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() -
+        new Date(a.updatedAt).getTime(),
+    );
   } catch (err) {
     console.error("Failed to load routes:", err);
 
@@ -48,6 +54,21 @@ const openRoute = (uuid: string) => {
     name: "route-edit",
     params: { uuid },
   });
+};
+
+const deleteRoute = async (uuid: string) => {
+  try {
+    await routeStorage.delete(uuid);
+
+    routes.value = routes.value.filter(
+      (route) => route.uuid !== uuid,
+    );
+
+    message.success("Маршрут удалён");
+  } catch (err) {
+    console.error("Failed to delete route:", err);
+    message.error("Не удалось удалить маршрут");
+  }
 };
 
 onMounted(loadRoutes);
@@ -161,18 +182,47 @@ onMounted(loadRoutes);
                     {{
                       route.geometrySource === "manual"
                         ? "Ручной"
-                    : "Построенный"
+                        : "Построенный"
                     }}
                   </NTag>
                 </NSpace>
 
-                <NButton
-                  size="small"
-                  type="primary"
-                  @click="openRoute(route.uuid)"
+                <NSpace
+                  align="center"
+                  :size="8"
                 >
-                  Открыть
-                </NButton>
+                  <NButton
+                    size="small"
+                    type="primary"
+                    @click="openRoute(route.uuid)"
+                  >
+                    Открыть
+                  </NButton>
+
+                  <NPopconfirm
+                    positive-text="Удалить"
+                    negative-text="Отмена"
+                    @positive-click="deleteRoute(route.uuid)"
+                  >
+                    <template #trigger>
+                      <NButton
+                        size="small"
+                        quaternary
+                        circle
+                        type="error"
+                      >
+                        <template #icon>
+                          <NIcon>
+                            <TrashOutline />
+                          </NIcon>
+                        </template>
+                      </NButton>
+                    </template>
+
+                    Удалить этот маршрут?
+                  </NPopconfirm>
+
+                </NSpace>
               </div>
             </NSpace>
           </NCard>

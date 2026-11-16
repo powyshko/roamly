@@ -1,12 +1,16 @@
 :root {
   /* Sage */
   --color-sage-50: #e8e9dc;
+  --color-sage-500: #788a70;
   --color-sage-600: #64765c;
+  --color-sage-700: #52634b;
   --color-sage-900: #354333;
 
   /* Terracotta */
   --color-terracotta-50: #f0e2d9;
+  --color-terracotta-400: #d18e70;
   --color-terracotta-500: #c77b5b;
+  --color-terracotta-600: #ad6549;
 
   /* Sand */
   --color-sand-50: #f1e9d9;
@@ -14,12 +18,27 @@
 
   /* Ocean */
   --color-ocean-50: #e0e8e4;
+  --color-ocean-500: #78968d;
   --color-ocean-600: #64877d;
+  --color-ocean-700: #526f66;
+
+  /* Error */
+  --color-error-400: #ca7165;
+  --color-error-500: #b85c50;
+  --color-error-600: #a54a40;
+
+  /* Neutral */
+  --color-white: #ffffff;
+  --color-surface: #ffffff;
+  --color-text-primary: #30382f;
+  --color-text-secondary: #77796f;
+  --color-border: #d8c7a8;
 
   /* Alpha */
   --color-sage-900-alpha-20: rgb(53 67 51 / 20%);
   --color-sage-900-alpha-25: rgb(53 67 51 / 25%);
   --color-sage-900-alpha-35: rgb(53 67 51 / 35%);
 
+  --color-sage-600-alpha-10: rgb(100 118 92 / 10%);
   --color-terracotta-500-alpha-25: rgb(199 123 91 / 25%);
 }

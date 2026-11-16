@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { RouteEditor } from "@/modules/route-editor"
+import { RouterView } from "vue-router";
 </script>
 
 <template>
   <div class="app">
-    <RouteEditor />
+    <RouterView />
   </div>
 </template>
 

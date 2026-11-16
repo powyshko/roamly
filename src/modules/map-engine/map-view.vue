@@ -87,6 +87,7 @@ const onDragEndPoint = (uuid: string) => {
       @redo="emit('redo')"
       @undo="emit('undo')"
       @save-route="emit('saveRoute')"
+      @back="emit('back')"
     />
 
     <MglMap

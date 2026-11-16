@@ -268,6 +268,10 @@ const loadRoute = async () => {
   }
 };
 
+const goToRouteLibrary = () => {
+  router.push({ name: "route-library" });
+};
+
 onMounted(() => {
   if (isEditMode.value) {
     loadRoute();
@@ -292,9 +296,13 @@ onMounted(() => {
       @point-drag-start="onPointDragStart"
       @point-drag-end="onPointDragEnd"
       @save-route="saveRoute"
+      @back="goToRouteLibrary"
     />
 
-    <RoutePropertiesPanel />
+    <RoutePropertiesPanel
+      v-model:title="route.title"
+      v-model:description="route.description"
+    />
   </div>
 </template>
 

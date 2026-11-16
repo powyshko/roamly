@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { NButton } from 'naive-ui'
+import { NButton, NText, NForm, NFormItem, NInput } from "naive-ui";
 import { ChevronBackOutline, ChevronForwardOutline } from '@vicons/ionicons5'
+
+const title = defineModel<string>("title", {
+  required: true,
+});
+
+const description = defineModel<string>("description", {
+  required: true,
+});
 
 const isOpen = ref(false)
 </script>
@@ -13,7 +21,7 @@ const isOpen = ref(false)
     aria-label="Настройки маршрута"
   >
     <header class="properties-panel-header">
-      <h2 v-if="isOpen" class="properties-panel-title">Настройки маршрута</h2>
+      <NText v-if="isOpen" class="properties-panel-title">Настройки маршрута</NText>
 
       <NButton
         quaternary
@@ -32,7 +40,25 @@ const isOpen = ref(false)
     </header>
 
     <div v-if="isOpen" class="properties-panel-content">
-      <slot />
+      <NForm label-placement="top">
+        <NFormItem label="Название маршрута">
+          <NInput
+            v-model:value="title"
+            placeholder="Например, Поездка к водопаду"
+            maxlength="100"
+          />
+        </NFormItem>
+
+        <NFormItem label="Описание">
+          <NInput
+            v-model:value="description"
+            type="textarea"
+            placeholder="Расскажите о маршруте..."
+            :autosize="{ minRows: 3, maxRows: 6 }"
+            maxlength="1000"
+          />
+        </NFormItem>
+      </NForm>
     </div>
   </aside>
 </template>

@@ -4,6 +4,7 @@ export type Emit = {
   undo: []
   redo: []
   saveRoute: []
+  back: []
   mapClick: [value: Coordinate]
   pointMove: [uuid: string, coordinate: Coordinate]
   lineClick: [value: Coordinate]

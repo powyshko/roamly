@@ -8,6 +8,7 @@ import { useRouteHistory } from "./composables/useRouteHistory";
 import { routeStorage } from "@/modules/storage";
 import { useRoute, useRouter } from "vue-router";
 import { useMessage } from "naive-ui";
+import RoutePropertiesPanel from "./parts/route-properties-panel.vue";
 
 const route = ref<Route>({
   uuid: crypto.randomUUID(),
@@ -292,7 +293,16 @@ onMounted(() => {
       @point-drag-end="onPointDragEnd"
       @save-route="saveRoute"
     />
+
+    <RoutePropertiesPanel />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.route-editor {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+</style>

@@ -1,15 +1,25 @@
 :root {
-  /* Базовая палитра: семейство цвета и уровень темноты оттенка (50–900). */
-  --color-sage-50: #edf2ed;
-  --color-sage-600: #627f78;
-  --color-sage-900: #24302b;
-  --color-terracotta-50: #fff0e5;
-  --color-terracotta-500: #c17b59;
-  --color-sand-50: #f8f6f0;
+  /* Sage */
+  --color-sage-50: #e8e9dc;
+  --color-sage-600: #64765c;
+  --color-sage-900: #354333;
 
-  /* Прозрачные варианты: alpha — непрозрачность в процентах. */
-  --color-sage-900-alpha-20: rgb(36 48 43 / 20%);
-  --color-sage-900-alpha-25: rgb(36 48 43 / 25%);
-  --color-sage-900-alpha-35: rgb(36 48 43 / 35%);
-  --color-terracotta-500-alpha-25: rgb(193 123 89 / 25%);
+  /* Terracotta */
+  --color-terracotta-50: #f0e2d9;
+  --color-terracotta-500: #c77b5b;
+
+  /* Sand */
+  --color-sand-50: #f1e9d9;
+  --color-sand-300: #d8c7a8;
+
+  /* Ocean */
+  --color-ocean-50: #e0e8e4;
+  --color-ocean-600: #64877d;
+
+  /* Alpha */
+  --color-sage-900-alpha-20: rgb(53 67 51 / 20%);
+  --color-sage-900-alpha-25: rgb(53 67 51 / 25%);
+  --color-sage-900-alpha-35: rgb(53 67 51 / 35%);
+
+  --color-terracotta-500-alpha-25: rgb(199 123 91 / 25%);
 }

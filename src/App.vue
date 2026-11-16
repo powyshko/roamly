@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { NConfigProvider, NMessageProvider } from 'naive-ui';
-import { RouterView } from 'vue-router';
-
-import { themeOverrides } from '@/app/theme';
+import { NConfigProvider, NDialogProvider, NMessageProvider } from "naive-ui";
+import { RouterView } from "vue-router";
+import { themeOverrides } from "@/app/theme";
 </script>
 
 <template>
   <NConfigProvider :theme-overrides="themeOverrides">
-    <NMessageProvider placement="bottom">
-      <RouterView />
-    </NMessageProvider>
+    <NDialogProvider>
+      <NMessageProvider placement="bottom">
+        <RouterView />
+      </NMessageProvider>
+    </NDialogProvider>
   </NConfigProvider>
 </template>
 

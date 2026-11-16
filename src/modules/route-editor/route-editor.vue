@@ -2,14 +2,16 @@
 import { MapView } from '@/modules/map-engine';
 import type { Coordinate, Route, RoutePoint } from '@/shared/types';
 import { HistoryActionType, RouteGeometrySource, RouteGeometryStatus } from '@/shared/types';
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { findNearestSegment } from './utils';
 import { useRouteHistory } from './composables/useRouteHistory';
 import { routeStorage } from '@/modules/storage';
-import { useRoute, useRouter } from 'vue-router';
-import { useMessage } from 'naive-ui';
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
+import { useMessage, useDialog } from 'naive-ui';
 import RoutePropertiesPanel from './parts/route-properties-panel.vue';
 import { length, lineString } from '@turf/turf';
+import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
 
 const route = ref<Route>({
   uuid: crypto.randomUUID(),
@@ -21,6 +23,10 @@ const route = ref<Route>({
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 });
+
+const savedRouteSnapshot = ref<Route>(
+  cloneDeep(route.value),
+);
 
 const selectedPointId = ref<string | null>(null);
 
@@ -37,8 +43,13 @@ const router = useRouter();
 const routeId = currentRoute.params.uuid as string | undefined;
 
 const message = useMessage();
+const dialog = useDialog();
 
 const isEditMode = computed(() => Boolean(routeId));
+
+const isDirty = computed(
+  () => !isEqual(route.value, savedRouteSnapshot.value),
+);
 
 const selectedPoint = computed(() =>
   route.value.points.find((point) => point.uuid === selectedPointId.value),
@@ -239,11 +250,21 @@ const onPointDragEnd = (uuid: string) => {
 };
 
 const saveRoute = async () => {
-  route.value.updatedAt = new Date().toISOString();
+  const routeData = cloneDeep(route.value);
 
-  const routeData = JSON.parse(JSON.stringify(route.value)) as Route;
+  routeData.updatedAt = new Date().toISOString();
 
-  await routeStorage.save(routeData);
+  try {
+    await routeStorage.save(routeData);
+
+    route.value.updatedAt = routeData.updatedAt;
+    savedRouteSnapshot.value = cloneDeep(routeData);
+
+    message.success("Маршрут сохранён");
+  } catch (err) {
+    console.error("Failed to save route:", err);
+    message.error("Не удалось сохранить маршрут");
+  }
 };
 
 const loadRoute = async () => {
@@ -253,17 +274,18 @@ const loadRoute = async () => {
     const savedRoute = await routeStorage.getById(routeId);
 
     if (!savedRoute) {
-      message.error('Маршрут не найден');
-      router.replace({ name: 'route-library' });
+      message.error("Маршрут не найден");
+      router.replace({ name: "route-library" });
       return;
     }
 
     route.value = savedRoute;
+    savedRouteSnapshot.value = cloneDeep(savedRoute);
   } catch (err) {
-    console.error('Failed to load route:', err);
+    console.error("Failed to load route:", err);
 
-    message.error('Не удалось загрузить маршрут');
-    router.replace({ name: 'route-library' });
+    message.error("Не удалось загрузить маршрут");
+    router.replace({ name: "route-library" });
   }
 };
 
@@ -271,10 +293,52 @@ const goToRouteLibrary = () => {
   router.push({ name: 'route-library' });
 };
 
+onBeforeRouteLeave(() => {
+  if (!isDirty.value) {
+    return true;
+  }
+
+  return new Promise<boolean>((resolve) => {
+    let isResolved = false;
+
+    const finish = (result: boolean) => {
+      if (isResolved) return;
+
+      isResolved = true;
+      resolve(result);
+    };
+
+    dialog.warning({
+      title: "Несохранённые изменения",
+      content: "У вас есть несохранённые изменения. Покинуть редактор?",
+      positiveText: "Покинуть",
+      negativeText: "Остаться",
+      onPositiveClick: () => finish(true),
+      onNegativeClick: () => finish(false),
+      onClose: () => finish(false),
+    });
+  });
+});
+
+const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+  if (!isDirty.value) return;
+
+  event.preventDefault();
+
+  // Браузерный API для запроса подтверждения выхода.
+  event.returnValue = "";
+};
+
 onMounted(() => {
   if (isEditMode.value) {
     loadRoute();
   }
+
+  window.addEventListener("beforeunload", handleBeforeUnload);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("beforeunload", handleBeforeUnload);
 });
 </script>
 
